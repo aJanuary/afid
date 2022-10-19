@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "afid"
+version = "0.1.0"
+description = "An ID format designed to meet the trade-off between space and human readability."
+authors = ["Andrew January <andrew@ajanuary.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

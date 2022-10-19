@@ -1,0 +1,4 @@
+.gradle
+.jqwik-database
+bin
+build
