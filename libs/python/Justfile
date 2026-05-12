@@ -1,0 +1,22 @@
+# Show available recipes.
+default:
+    @just --list
+
+# Run format-check, lint, typecheck and tests.
+check:
+    uv run ruff format --check .
+    uv run ruff check .
+    uv run ty check
+    uv run pytest
+
+# Run tests.
+test:
+    uv run pytest
+
+# Run benchmarks.
+bench:
+    uv run pytest bench/
+
+# Apply formatting.
+format:
+    uv run ruff format .
