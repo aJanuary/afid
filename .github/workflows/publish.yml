@@ -37,6 +37,8 @@ jobs:
   java:
     if: startsWith(github.event.release.tag_name, 'libs/java/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: libs/java
@@ -77,11 +79,16 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
 
+      - name: Attach JARs to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" build/libs/*.jar --clobber
+
   python:
     if: startsWith(github.event.release.tag_name, 'libs/python/v')
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     defaults:
       run:
@@ -124,11 +131,16 @@ jobs:
         with:
           packages-dir: libs/python/dist
 
+      - name: Attach distributions to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/* --clobber
+
   rust:
     if: startsWith(github.event.release.tag_name, 'libs/rust/v')
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     defaults:
       run:
@@ -162,16 +174,24 @@ jobs:
         uses: rust-lang/crates-io-auth-action@v1
         id: auth
 
+      - name: Package crate
+        run: cargo package
+
       - name: Publish to crates.io
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
         run: cargo publish
 
+      - name: Attach crate to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" target/package/*.crate --clobber
+
   typescript:
     if: startsWith(github.event.release.tag_name, 'libs/typescript/v')
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     defaults:
       run:
@@ -226,5 +246,16 @@ jobs:
           fi
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
+      - name: Pack tarball
+        id: pack
+        run: |
+          TARBALL=$(npm pack --silent)
+          echo "tarball=${TARBALL}" >> "$GITHUB_OUTPUT"
+
       - name: Publish to npm
-        run: npm publish --provenance --access public --tag '${{ steps.disttag.outputs.tag }}'
+        run: npm publish --provenance --access public --tag '${{ steps.disttag.outputs.tag }}' '${{ steps.pack.outputs.tarball }}'
+
+      - name: Attach tarball to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" '${{ steps.pack.outputs.tarball }}' --clobber
