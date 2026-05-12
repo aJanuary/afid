@@ -1,0 +1,49 @@
+name: Publish Java
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    if: startsWith(github.event.release.tag_name, 'libs/java/v')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: libs/java
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG='${{ github.event.release.tag_name }}'
+          VERSION="${TAG#libs/java/v}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify gradle.properties version matches tag
+        run: |
+          GRADLE_VERSION=$(grep '^version=' gradle.properties | cut -d= -f2)
+          if [ "${GRADLE_VERSION}" != "${{ steps.version.outputs.version }}" ]; then
+            echo "::error::gradle.properties version (${GRADLE_VERSION}) does not match tag version (${{ steps.version.outputs.version }})"
+            exit 1
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6.1.0
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
