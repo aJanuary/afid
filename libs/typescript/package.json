@@ -1,6 +1,6 @@
 {
   "name": "afidgen",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.2",
   "description": "Generate afid ids — human-friendly random identifiers.",
   "type": "module",
   "main": "./dist/index.js",
@@ -37,7 +37,10 @@
   ],
   "author": "Andrew January <andrew@ajanuary.com>",
   "license": "MIT",
-  "repository": "github:ajanuary/afid",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajanuary/afid.git"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
     "@types/node": "^25.7.0",

@@ -42,10 +42,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6.4.0
         with:
-          node-version: '20'
+          node-version: '24'
           cache: pnpm
           cache-dependency-path: libs/typescript/pnpm-lock.yaml
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -53,5 +52,17 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Determine npm dist-tag
+        id: disttag
+        run: |
+          VERSION='${{ steps.version.outputs.version }}'
+          PRERELEASE="${VERSION#*-}"
+          if [ "${PRERELEASE}" = "${VERSION}" ]; then
+            TAG=latest
+          else
+            TAG="${PRERELEASE%%.*}"
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
       - name: Publish to npm
-        run: pnpm publish --provenance --access public --no-git-checks
+        run: npm publish --provenance --access public --tag '${{ steps.disttag.outputs.tag }}'
