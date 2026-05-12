@@ -1,9 +1,11 @@
-package com.ajanuary.afid;
+package com.ajanuary.afidgen;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
@@ -12,8 +14,27 @@ import net.jqwik.api.Property;
 import net.jqwik.api.constraints.IntRange;
 import net.jqwik.api.constraints.UniqueElements;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.Answer;
 
 public class ImplementationTests {
+
+  private static Answer<Void> fillWith(byte value) {
+    return inv -> {
+      Arrays.fill((byte[]) inv.getArgument(0), value);
+      return null;
+    };
+  }
+
+  private static Answer<Void> fillFromInt(int value) {
+    return inv -> {
+      byte[] bytes = inv.getArgument(0);
+      for (int i = 0; i < bytes.length; i++) {
+        bytes[i] = (byte) (value >>> (8 * (3 - (i & 3))));
+      }
+      return null;
+    };
+  }
+
   // These tests know too much about the implementation, and are testing things that aren't
   // a part of the spec, but just happen to be how the functions are implemented.
   // For example, there isn't anything that dictates the order of the alphabet, so the random
@@ -23,24 +44,24 @@ public class ImplementationTests {
 
   @Test
   void works_with_lowest_value() {
-    var random = spy(RandomGenerator.class);
-    when(random.nextLong()).thenReturn(0L);
-    var generator = AFID.longGenerator(random, "my-prefix");
+    var random = mock(RandomGenerator.class);
+    doAnswer(fillWith((byte) 0)).when(random).nextBytes(any(byte[].class));
+    var generator = AFID.longGenerator("ent", random);
 
     var id = generator.next();
 
-    assertThat(id).isEqualTo("my-prefix-00000-00000000000000000000");
+    assertThat(id).isEqualTo("ent-00000-00000000000000000000");
   }
 
   @Test
   void works_with_highest_value() {
-    var random = spy(RandomGenerator.class);
-    when(random.nextLong()).thenReturn(0x01FFFFFF00000000L);
-    var generator = AFID.longGenerator(random, "my-prefix");
+    var random = mock(RandomGenerator.class);
+    doAnswer(fillWith((byte) 0xFF)).when(random).nextBytes(any(byte[].class));
+    var generator = AFID.longGenerator("ent", random);
 
     var id = generator.next();
 
-    assertThat(id).isEqualTo("my-prefix-zzzzz-zzzzzzzzzzzzzzzzzzzz");
+    assertThat(id).isEqualTo("ent-zzzzz-zzzzzzzzzzzzzzzzzzzz");
   }
 
   @Property
@@ -50,9 +71,9 @@ public class ImplementationTests {
         values.stream()
             .map(
                 value -> {
-                  var random = spy(RandomGenerator.class);
-                  when(random.nextInt()).thenReturn(value);
-                  var generator = AFID.longGenerator(random, "my-prefix");
+                  var random = mock(RandomGenerator.class);
+                  doAnswer(fillFromInt(value)).when(random).nextBytes(any(byte[].class));
+                  var generator = AFID.longGenerator("ent", random);
                   return generator.next();
                 })
             .collect(Collectors.toList());
