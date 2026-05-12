@@ -1,0 +1,102 @@
+# Show available recipes.
+default:
+    @just --list
+
+# Run the full check suite (format-check, lint, tests) for every lib.
+check: check-java check-python check-rust check-typescript check-go
+
+# Run Java's full check (Spotless format-check + tests).
+[working-directory: 'java']
+check-java:
+    @echo "> java: checking"
+    ./gradlew check
+
+# Run Python's format-check, lint, typecheck and tests.
+[working-directory: 'python']
+check-python:
+    @echo "> python: checking"
+    just check
+
+# Run Rust's format-check, lint and tests.
+[working-directory: 'rust']
+check-rust:
+    @echo "> rust: checking"
+    just check
+
+# Run TypeScript's lint, typecheck and tests.
+[working-directory: 'typescript']
+check-typescript:
+    @echo "> typescript: checking"
+    pnpm run check
+
+# Run Go's format-check, vet, staticcheck and tests.
+[working-directory: 'go']
+check-go:
+    @echo "> go: checking"
+    just check
+
+# Run benchmarks for every lib.
+bench: bench-java bench-python bench-rust bench-typescript bench-go
+
+# Run Java's benchmarks.
+[working-directory: 'java']
+bench-java:
+    @echo "> java: benchmarking"
+    ./gradlew jmh
+
+# Run Python's benchmarks.
+[working-directory: 'python']
+bench-python:
+    @echo "> python: benchmarking"
+    just bench
+
+# Run Rust's benchmarks.
+[working-directory: 'rust']
+bench-rust:
+    @echo "> rust: benchmarking"
+    just bench
+
+# Run TypeScript's benchmarks.
+[working-directory: 'typescript']
+bench-typescript:
+    @echo "> typescript: benchmarking"
+    pnpm run bench
+
+# Run Go's benchmarks.
+[working-directory: 'go']
+bench-go:
+    @echo "> go: benchmarking"
+    just bench
+
+# Apply formatting to every lib.
+format: format-java format-python format-rust format-typescript format-go
+
+# Apply Java formatting.
+[working-directory: 'java']
+format-java:
+    @echo "> java: formatting"
+    ./gradlew spotlessApply
+
+# Apply Python formatting.
+[working-directory: 'python']
+format-python:
+    @echo "> python: formatting"
+    just format
+
+# Apply Rust formatting.
+[working-directory: 'rust']
+format-rust:
+    @echo "> rust: formatting"
+    just format
+
+# Apply TypeScript formatting.
+[working-directory: 'typescript']
+format-typescript:
+    @echo "> typescript: formatting"
+    pnpm run format
+
+# Apply Go formatting.
+[working-directory: 'go']
+format-go:
+    @echo "> go: formatting"
+    just format
