@@ -1,6 +1,6 @@
 {
   "name": "afidgen",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0",
   "description": "Generate afid ids — human-friendly random identifiers.",
   "type": "module",
   "main": "./dist/index.js",

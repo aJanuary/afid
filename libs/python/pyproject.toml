@@ -1,6 +1,6 @@
 [project]
 name = "afidgen"
-version = "1.0.0rc0"
+version = "1.0.0"
 description = "An ID format designed to meet the trade-off between space and human readability."
 readme = "README.md"
 requires-python = ">=3.9"
