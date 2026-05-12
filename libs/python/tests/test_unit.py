@@ -1,174 +1,116 @@
-import afid
+import itertools
 import re
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
+import afidgen
+
+
+SHORT_RE = re.compile(r"ent-[0-9a-hjkmnp-tv-z]{5}-[0-9a-hjkmnp-tv-z]{10}\Z")
+LONG_RE = re.compile(r"ent-[0-9a-hjkmnp-tv-z]{5}-[0-9a-hjkmnp-tv-z]{20}\Z")
 
 
 def test_random_short_generates_ids_with_correct_shape():
-    id = afid.random_short("my-prefix")
-
-    assert re.match(r"my-prefix-[a-z0-9]{5}-[a-z0-9]{10}$", id)
-
-
-def test_random_short_errors_if_prefix_is_empty():
-    with pytest.raises(ValueError) as raised:
-        afid.random_short("")
-
-    assert str(raised.value) == "prefix must not be empty"
-
-
-def test_random_short_errors_if_prefix_too_long():
-    # maximum length doesn't throw
-    afid.random_short("123456789-123456789-123456789-1")
-
-    # longer than maximum length does throw
-    with pytest.raises(ValueError) as raised:
-        afid.random_short("123456789-123456789-123456789-12")
-
-    assert str(raised.value) == "prefix cannot be longer than 31 characters"
-
-
-def test_random_short_errors_if_prefix_contains_invalid_chars():
-    # valid characters don't throw
-    afid.random_short("abcde1234")
-    afid.random_short("fghij5678")
-    afid.random_short("klmnopr90")
-    afid.random_short("stuvwxyz-")
-
-    # invalid characters do throw
-    with pytest.raises(ValueError) as raised:
-        afid.random_short("ABC")
-    assert (
-        str(raised.value) == "prefix can only contain lowercase letters, numbers, or -"
-    )
-
-    with pytest.raises(ValueError) as raised:
-        afid.random_short("a_b_c")
-    assert (
-        str(raised.value) == "prefix can only contain lowercase letters, numbers, or -"
-    )
+    assert SHORT_RE.match(afidgen.random_short("ent"))
 
 
 def test_random_long_generates_ids_with_correct_shape():
-    id = afid.random_long("my-prefix")
-
-    assert re.match(r"my-prefix-[a-z0-9]{5}-[a-z0-9]{20}$", id)
+    assert LONG_RE.match(afidgen.random_long("ent"))
 
 
-def test_random_long_errors_if_prefix_is_empty():
-    with pytest.raises(ValueError) as raised:
-        afid.random_long("")
-
-    assert str(raised.value) == "prefix must not be empty"
+def test_generator_short_produces_short_ids():
+    assert SHORT_RE.match(afidgen.Generator.short("ent")())
 
 
-def test_random_long_errors_if_prefix_too_long():
-    # maximum length doesn't throw
-    afid.random_long("123456789-123456789-1")
-
-    # longer than maximum length does throw
-    with pytest.raises(ValueError) as raised:
-        afid.random_long("123456789-123456789-12")
-
-    assert str(raised.value) == "prefix cannot be longer than 21 characters"
+def test_generator_long_produces_long_ids():
+    assert LONG_RE.match(afidgen.Generator.long("ent")())
 
 
-def test_random_long_errors_if_prefix_contains_invalid_chars():
-    # valid characters don't throw
-    afid.random_long("abcde1234")
-    afid.random_long("fghij5678")
-    afid.random_long("klmnopr90")
-    afid.random_long("stuvwxyz-")
-
-    # invalid characters do throw
-    with pytest.raises(ValueError) as raised:
-        afid.random_long("ABC")
-    assert (
-        str(raised.value) == "prefix can only contain lowercase letters, numbers, or -"
-    )
-
-    with pytest.raises(ValueError) as raised:
-        afid.random_long("a_b_c")
-    assert (
-        str(raised.value) == "prefix can only contain lowercase letters, numbers, or -"
-    )
+@pytest.mark.parametrize("build", [afidgen.Generator.short, afidgen.Generator.long])
+def test_generator_exposes_prefix(build):
+    assert build("ent").prefix == "ent"
 
 
-def test_short_generator_returns_generator_with_correct_attributes():
-    generator = afid.short_generator("my-prefix")
-
-    assert generator.variant == afid.VARIANT_SHORT
-    assert generator.prefix == "my-prefix"
+def test_generator_is_callable():
+    gen = afidgen.Generator.short("ent")
+    assert SHORT_RE.match(gen())
 
 
-def test_short_generator_generates_ids_with_correct_shape():
-    generator = afid.short_generator("my-prefix")
-
-    id = generator.next()
-
-    assert re.match(r"my-prefix-[a-z0-9]{5}-[a-z0-9]{10}$", id)
+def test_generator_supports_next_builtin():
+    gen = afidgen.Generator.short("ent")
+    assert SHORT_RE.match(next(gen))
 
 
-def test_short_generator_uses_random_if_provided():
-    getrandbits = MagicMock(return_value=0)
-    generator = afid.short_generator("my-prefix", rand=getrandbits)
+def test_generator_is_iterable():
+    gen = afidgen.Generator.short("ent")
 
-    generator.next()
+    ids = list(itertools.islice(gen, 3))
 
-    getrandbits.assert_called()
-
-
-def test_long_generator_returns_generator_with_correct_attributes():
-    generator = afid.long_generator("my-prefix")
-
-    assert generator.variant == afid.VARIANT_LONG
-    assert generator.prefix == "my-prefix"
+    assert len(ids) == 3
+    assert all(SHORT_RE.match(i) for i in ids)
 
 
-def test_long_generator_generates_ids_with_correct_shape():
-    generator = afid.long_generator("my-prefix")
+def test_generator_uses_randbytes_if_provided():
+    randbytes = MagicMock(side_effect=lambda n: bytes(n))
 
-    id = generator.next()
+    afidgen.Generator.short("ent", randbytes=randbytes)()
 
-    assert re.match(r"my-prefix-[a-z0-9]{5}-[a-z0-9]{20}$", id)
-
-
-def test_long_generator_uses_random_if_provided():
-    getrandbits = MagicMock(return_value=0)
-    generator = afid.long_generator("my-prefix", rand=getrandbits)
-
-    generator.next()
-
-    getrandbits.assert_called()
+    randbytes.assert_called_once()
 
 
-def test_generator_returns_generator_with_correct_attributes():
-    short_generator = afid.short_generator("my-prefix")
-    assert short_generator.variant == afid.VARIANT_SHORT
-    assert short_generator.prefix == "my-prefix"
-
-    long_generator = afid.long_generator("my-prefix")
-    assert long_generator.variant == afid.VARIANT_LONG
-    assert long_generator.prefix == "my-prefix"
+@pytest.mark.parametrize("build", [afidgen.Generator.short, afidgen.Generator.long])
+def test_generator_rejects_none_randbytes(build):
+    with pytest.raises(ValueError, match="randbytes cannot be None"):
+        build("ent", randbytes=None)
 
 
-def test_generator_generators_id_with_correct_shape():
-    short_generator = afid.short_generator("my-prefix")
-    short_id = short_generator.next()
-    assert re.match(r"my-prefix-[a-z0-9]{5}-[a-z0-9]{10}$", short_id)
+@pytest.mark.parametrize(
+    "build,expected", [(afidgen.Generator.short, 10), (afidgen.Generator.long, 20)]
+)
+def test_generator_rejects_wrong_randbytes_length(build, expected):
+    gen = build("ent", randbytes=lambda n: bytes(max(n - 1, 0)))
 
-    long_generator = afid.long_generator("my-prefix")
-    long_id = long_generator.next()
-    assert re.match(r"my-prefix-[a-z0-9]{5}-[a-z0-9]{20}$", long_id)
+    with pytest.raises(
+        ValueError, match=rf"randbytes must return exactly {expected} bytes"
+    ):
+        gen()
 
 
-def test_generator_uses_random_if_provided():
-    short_getrandbits = MagicMock(return_value=0)
-    short_generator = afid.short_generator("my-prefix", rand=short_getrandbits)
-    short_generator.next()
-    short_getrandbits.assert_called()
+@pytest.mark.parametrize("factory", [afidgen.random_short, afidgen.random_long])
+@pytest.mark.parametrize("prefix", ["", "ab", "abcd", "aaaaa"])
+def test_random_helpers_reject_wrong_length_prefix(factory, prefix):
+    with pytest.raises(ValueError, match="prefix must be exactly 3 characters"):
+        factory(prefix)
 
-    long_getrandbits = MagicMock(return_value=0)
-    long_generator = afid.long_generator("my-prefix", rand=long_getrandbits)
-    long_generator.next()
-    long_getrandbits.assert_called()
+
+@pytest.mark.parametrize("factory", [afidgen.random_short, afidgen.random_long])
+@pytest.mark.parametrize("prefix", ["ABC", "a_b", "a-b", "a b"])
+def test_random_helpers_reject_invalid_characters(factory, prefix):
+    with pytest.raises(
+        ValueError, match="prefix can only contain lowercase letters and numbers"
+    ):
+        factory(prefix)
+
+
+@pytest.mark.parametrize("build", [afidgen.Generator.short, afidgen.Generator.long])
+@pytest.mark.parametrize("prefix", ["", "ab", "abcd"])
+def test_generator_rejects_wrong_length_prefix(build, prefix):
+    with pytest.raises(ValueError, match="prefix must be exactly 3 characters"):
+        build(prefix)
+
+
+@pytest.mark.parametrize("build", [afidgen.Generator.short, afidgen.Generator.long])
+@pytest.mark.parametrize("prefix", ["ABC", "a_b", "a-b", "a b"])
+def test_generator_rejects_invalid_characters(build, prefix):
+    with pytest.raises(
+        ValueError, match="prefix can only contain lowercase letters and numbers"
+    ):
+        build(prefix)
+
+
+@pytest.mark.parametrize("prefix", ["abc", "xyz", "012", "a1b", "z0z"])
+def test_generator_accepts_valid_prefixes(prefix):
+    # Should not raise.
+    afidgen.Generator.short(prefix)
+    afidgen.Generator.long(prefix)

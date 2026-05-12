@@ -1,34 +1,37 @@
-from hypothesis import given
-from hypothesis.strategies import integers
-import afid
 import re
 
+from hypothesis import given
+from hypothesis.strategies import binary
 
-@given(integers())
+import afidgen
+
+
+SHORT_BYTES = binary(min_size=10, max_size=10)
+LONG_BYTES = binary(min_size=20, max_size=20)
+B32_ALPHABET = "0123456789abcdefghjkmnpqrstvwxyz"
+
+
+@given(LONG_BYTES)
 def test_ids_only_include_base32_chars(value):
-    generator = afid.long_generator("my-prefix", rand=lambda n: value)
+    gen = afidgen.Generator.long("ent", randbytes=lambda _n: value)
 
-    id = generator.next()
+    id = gen()
 
     assert re.match(
-        r"^my-prefix-[0123456789abcdefghjkmnpqrstvwxyz]{5}-[0123456789abcdefghjkmnpqrstvwxyz]{20}",
+        rf"^ent-[{B32_ALPHABET}]{{5}}-[{B32_ALPHABET}]{{20}}\Z",
         id,
     )
 
 
-@given(integers())
-def test_short_ids_are_17_characters_long_after_prefix(value):
-    generator = afid.short_generator("my-prefix", rand=lambda n: value)
+@given(SHORT_BYTES)
+def test_short_ids_are_20_characters_long(value):
+    gen = afidgen.Generator.short("ent", randbytes=lambda _n: value)
 
-    id = generator.next()
-
-    assert len(id) == 26
+    assert len(gen()) == 20
 
 
-@given(integers())
-def test_short_ids_are_27_characters_long_after_prefix(value):
-    generator = afid.long_generator("my-prefix", rand=lambda n: value)
+@given(LONG_BYTES)
+def test_long_ids_are_30_characters_long(value):
+    gen = afidgen.Generator.long("ent", randbytes=lambda _n: value)
 
-    id = generator.next()
-
-    assert len(id) == 36
+    assert len(gen()) == 30
