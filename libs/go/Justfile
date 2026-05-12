@@ -1,0 +1,24 @@
+# Show available recipes.
+default:
+    @just --list
+
+# Run format-check, vet, staticcheck and tests.
+# Staticcheck is declared as a `tool` in go.mod (Go 1.24+) and invoked via
+# `go tool staticcheck`, so there's no extra install step beyond `go mod download`.
+check:
+    test -z "$(gofmt -l .)" || (echo "gofmt: files need formatting:"; gofmt -l .; exit 1)
+    go vet ./...
+    go tool staticcheck ./...
+    go test ./...
+
+# Run tests.
+test:
+    go test ./...
+
+# Apply formatting.
+format:
+    go fmt ./...
+
+# Run benchmarks.
+bench:
+    go test -bench . -benchmem ./...
