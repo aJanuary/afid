@@ -1,0 +1,48 @@
+{
+  "name": "afidgen",
+  "version": "1.0.0-rc.0",
+  "description": "Generate afid ids — human-friendly random identifiers.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "pnpm run lint && pnpm run typecheck && pnpm run test",
+    "test": "vitest run",
+    "bench": "vitest bench --run",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "id",
+    "identifier",
+    "random",
+    "base32",
+    "afid"
+  ],
+  "author": "Andrew January <andrew@ajanuary.com>",
+  "license": "MIT",
+  "repository": "github:ajanuary/afid",
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.15",
+    "@types/node": "^25.7.0",
+    "fast-check": "^4.7.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
+  }
+}
