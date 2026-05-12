@@ -1,4 +1,4 @@
-module github.com/ajanuary/afid/libs/go
+module github.com/aJanuary/afid/libs/go
 
 go 1.25.0
 

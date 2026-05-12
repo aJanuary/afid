@@ -3,7 +3,7 @@ package afidgen_test
 import (
 	"testing"
 
-	afidgen "github.com/ajanuary/afid/libs/go"
+	afidgen "github.com/aJanuary/afid/libs/go"
 	"github.com/google/uuid"
 )
 

@@ -7,7 +7,7 @@ package afidgen_test
 import (
 	"testing"
 
-	afidgen "github.com/ajanuary/afid/libs/go"
+	afidgen "github.com/aJanuary/afid/libs/go"
 )
 
 // constReader emits a single byte value forever.

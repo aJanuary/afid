@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	afidgen "github.com/ajanuary/afid/libs/go"
+	afidgen "github.com/aJanuary/afid/libs/go"
 )
 
 // padBytes returns a non-empty byte slice that the fuzz target can feed to

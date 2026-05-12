@@ -1,6 +1,6 @@
 # afidgen
 
-A Go package for generating [afid ids](https://github.com/ajanuary/afid).
+A Go package for generating [afid ids](https://github.com/aJanuary/afid).
 
 Afids are compact, human-readable IDs made of lowercase letters, digits, and
 hyphens. They come in two variants — short (20 chars, 75 bits of randomness) and
@@ -13,7 +13,7 @@ evt-2sed3-1p3dpw40dsabckdvc7p1    # long
 
 The prefix is yours to assign (typically the resource type); the tag and suffix
 are random, drawn from a Crockford Base32 alphabet that omits easily-confused
-characters. See the [afid spec](https://github.com/ajanuary/afid) for the full
+characters. See the [afid spec](https://github.com/aJanuary/afid) for the full
 grammar and analysis.
 
 ## Requirements
@@ -23,14 +23,14 @@ Go 1.25.0 or later.
 ## Installing
 
 ```sh
-go get github.com/ajanuary/afid/libs/go
+go get github.com/aJanuary/afid/libs/go
 ```
 
 Import as `afidgen` — the package name differs from the last path element, so
 use an explicit alias:
 
 ```go
-import afidgen "github.com/ajanuary/afid/libs/go"
+import afidgen "github.com/aJanuary/afid/libs/go"
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ import afidgen "github.com/ajanuary/afid/libs/go"
 import (
     "fmt"
 
-    afidgen "github.com/ajanuary/afid/libs/go"
+    afidgen "github.com/aJanuary/afid/libs/go"
 )
 
 // One-off IDs.

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	afidgen "github.com/ajanuary/afid/libs/go"
+	afidgen "github.com/aJanuary/afid/libs/go"
 )
 
 const alphabet = "0123456789abcdefghjkmnpqrstvwxyz"

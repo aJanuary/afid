@@ -32,7 +32,7 @@ jobs:
       - name: Warm Go proxy
         env:
           GOPROXY: proxy.golang.org
-        run: go list -m "github.com/ajanuary/afid/libs/go@${{ steps.version.outputs.version }}"
+        run: go list -m "github.com/aJanuary/afid/libs/go@${{ steps.version.outputs.version }}"
 
   java:
     if: startsWith(github.event.release.tag_name, 'libs/java/v')

@@ -39,7 +39,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ajanuary/afid.git"
+    "url": "git+https://github.com/aJanuary/afid.git"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
