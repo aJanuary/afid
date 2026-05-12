@@ -227,6 +227,7 @@ jobs:
           node-version: '24'
           cache: pnpm
           cache-dependency-path: libs/typescript/pnpm-lock.yaml
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
