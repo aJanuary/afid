@@ -1,0 +1,21 @@
+# Show available recipes.
+default:
+    @just --list
+
+# Run format-check, lint and tests.
+check:
+    cargo fmt --check
+    cargo clippy --all-targets -- -D warnings
+    cargo test
+
+# Run tests.
+test:
+    cargo test
+
+# Apply formatting.
+format:
+    cargo fmt
+
+# Run benchmarks.
+bench:
+    cargo bench
