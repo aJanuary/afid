@@ -5,26 +5,44 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
    width="530px"
-   height="130px">
+   height="250px">
+  <style>
+    text { fill: #1f2328; }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #e6edf3; }
+      .accent { stroke: #555; }
+    }
+  </style>
   <g style="font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'">
-   <text style="font-size: 40px; font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace" x="0" y="40">entity-2sed3-1p3pw40ds</text>
-   <text style="font-style: italic; font-weight: bold" x="0" y="70">prefix</text>
+   <text style="font-size: 40px; font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace" x="0" y="40">ent-2sed3-1p3dpw40ds</text>
+
+   <g class="accent" fill="none" stroke="#888" stroke-width="1.5">
+      <path d="M 0,55 L 0,60 L 33,60 L 36,63 L 39,60 L 72,60 L 72,55"/>
+      <line x1="36" y1="63" x2="36" y2="84"/>
+      <path d="M 96,55 L 96,60 L 153,60 L 156,63 L 159,60 L 216,60 L 216,55"/>
+      <line x1="156" y1="63" x2="156" y2="184"/>
+      <path d="M 240,55 L 240,60 L 357,60 L 360,63 L 363,60 L 480,60 L 480,55"/>
+      <line x1="360" y1="63" x2="360" y2="84"/>
+   </g>
+
+   <text style="font-style: italic; font-weight: bold" x="10" y="100">prefix</text>
    <text>
-      <tspan x="0" y="90">describe what the id</tspan>
-      <tspan x="0" y="108">is for with a prefix</tspan>
-      <tspan x="0" y="126">you choose</tspan>
+      <tspan x="10" y="120">describe what the id</tspan>
+      <tspan x="10" y="138">is for with a prefix</tspan>
+      <tspan x="10" y="156">you choose</tspan>
    </text>
-   <text style="font-style: italic; font-weight: bold" x="170" y="70">tag</text>
+
+   <text style="font-style: italic; font-weight: bold" x="336" y="100">suffix</text>
    <text>
-      <tspan x="170" y="90">tags let you easily</tspan>
-      <tspan x="170" y="108">scan for ids</tspan>
-      <tspan x="170" y="126">in blocks of text</tspan>
+      <tspan x="336" y="120">10 or 20 character suffix</tspan>
+      <tspan x="336" y="138">provides enough entropy for</tspan>
+      <tspan x="336" y="156">10 thousand ids per hour</tspan>
    </text>
-   <text style="font-style: italic; font-weight: bold" x="315" y="70">suffix</text>
+
+   <text style="font-style: italic; font-weight: bold" x="146" y="200">tag</text>
    <text>
-      <tspan x="315" y="90">10-20 character suffix</tspan>
-      <tspan x="315" y="108">provides enough entropy for</tspan>
-      <tspan x="315" y="126">a billion ids per hour</tspan>
+      <tspan x="146" y="220">tags let you easily scan</tspan>
+      <tspan x="146" y="238">for ids in blocks of text</tspan>
    </text>
   </g>
 </svg>
