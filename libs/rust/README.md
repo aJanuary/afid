@@ -2,6 +2,20 @@
 
 A Rust crate for generating [afid ids](https://github.com/ajanuary/afid).
 
+Afids are compact, human-readable IDs made of lowercase letters, digits, and
+hyphens. They come in two variants — short (20 chars, 75 bits of randomness) and
+long (30 chars, 125 bits) — both shaped as `prefix-tag-suffix`:
+
+```
+res-2sed3-1p3dpw40ds              # short
+evt-2sed3-1p3dpw40dsabckdvc7p1    # long
+```
+
+The prefix is yours to assign (typically the resource type); the tag and suffix
+are random, drawn from a Crockford Base32 alphabet that omits easily-confused
+characters. See the [afid spec](https://github.com/ajanuary/afid) for the full
+grammar and analysis.
+
 ## Requirements
 
 Rust 2024 edition (1.85 or later).
