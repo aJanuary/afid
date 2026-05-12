@@ -3,7 +3,7 @@ plugins {
 	id 'com.diffplug.spotless' version '8.4.0'
 	id 'info.solidsoft.pitest' version '1.19.0'
 	id 'me.champeau.jmh' version '0.7.3'
-	id 'com.vanniktech.maven.publish' version '0.30.0'
+	id 'com.vanniktech.maven.publish' version '0.36.0'
 }
 
 repositories {
@@ -47,7 +47,7 @@ jmh {
 }
 
 mavenPublishing {
-	publishToMavenCentral()
+	publishToMavenCentral(true)
 	signAllPublications()
 
 	coordinates(project.group.toString(), 'afidgen', project.version.toString())
